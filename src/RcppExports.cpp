@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // predict_CLDA_cpp
-NumericVector predict_CLDA_cpp(List mod, arma::mat x);
+IntegerVector predict_CLDA_cpp(List mod, arma::mat x);
 RcppExport SEXP _CLDA_predict_CLDA_cpp(SEXP modSEXP, SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
