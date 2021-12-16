@@ -11,6 +11,36 @@
 #' @return
 #' @export
 CLDA <- function(x, y, linear, type, m, gamma = 0.01) {
+  # Basic input checks ---
+  stopifnot(is.matrix(x))
+  stopifnot(sum(y %in% c(0,1)) == length(y))
+  stopifnot(is.logical(linear))
+  stopifnot(type %in% c("compressed", "projected", "FRF", "sub-sampled", "full"))
+  stopifnot(m <= nrow(x))
+  stopifnot(is.double(gamma))
   
-  return(x)
+  # Collect inputs ---
+  n <- nrow(x)
+  p <- ncol(x)
+  misclass_rate = 0.0
+  exec_time = 0.0
+  
+  
+  # Start LDA ---
+  
+  
+  
+  
+  
+  
+  return(list(
+    x             = x,
+    y             = y,
+    linear        = linear,
+    type          = type,
+    m             = m,
+    gamma         = gamma,
+    misclass_rate = misclass_rate,
+    exec_time     = exec_time
+  ))
 }
