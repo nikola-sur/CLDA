@@ -19,6 +19,8 @@ CLDA <- function(x, y, linear, type, m, gamma = 0.01) {
   stopifnot(is.logical(linear))
   stopifnot(type %in% c("compressed", "projected", "FRF", "sub-sampled", "full"))
   stopifnot(m <= length(x))
+  stopifnot((m == n) | (type != "full"))
+  stopifnot((gamma == 0) | (type != "full"))
   stopifnot(is.double(gamma))
   
   
@@ -66,12 +68,11 @@ CLDA <- function(x, y, linear, type, m, gamma = 0.01) {
     n         = n,
     n_0       = n_0,
     n_1       = n_1,
-    exec_time = exec_time
+    exec_time = exec_time,
+    params    = params
   )
+  class(mod) <- c("CLDA", class(mod))
   
   
-  return(list(
-    mod    = mod,
-    params = params
-  ))
+  return(mod)
 }

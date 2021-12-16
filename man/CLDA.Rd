@@ -2,7 +2,8 @@
 % Please edit documentation in R/CLDA.R
 \name{CLDA}
 \alias{CLDA}
-\title{CLDA}
+\title{CLDA
+Various LDA/QDA functions and compression schemes.}
 \usage{
 CLDA(x, y, linear, type, m, gamma = 0.01)
 }
@@ -16,7 +17,7 @@ CLDA(x, y, linear, type, m, gamma = 0.01)
 \item{type}{Type of compression. One of "compressed", "projected", "FRF", "sub-sampled", or "full".
 For QDA, "projected" and "FRF" are not implemented.}
 
-\item{m}{Reduced sample size.}
+\item{m}{Reduced number of samples}
 
 \item{gamma}{Tuning parameter for numerical stability (see the paper). Defaults to 0.01.}
 }
@@ -25,4 +26,5 @@ For QDA, "projected" and "FRF" are not implemented.}
 }
 \description{
 CLDA
+Various LDA/QDA functions and compression schemes.
 }

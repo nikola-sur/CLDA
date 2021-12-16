@@ -4,7 +4,10 @@ rm(list=ls())
 
 library(CLDA)
 
-CLDA::testfun(10) # 55
-
 data(zip_train)
-data(zip_test)
+# data(zip_test)
+
+x <- as.matrix(unname(zip_train[, -1]))
+y <- as.numeric(zip_train[, 1])
+
+CLDA::CLDA(x = x, y = y, linear = TRUE, type = "full", m = nrow(x), gamma = 0.01)
