@@ -12,13 +12,13 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // predict_CLDA_cpp
-NumericVector predict_CLDA_cpp(List mod, NumericMatrix x);
+NumericVector predict_CLDA_cpp(List mod, arma::mat x);
 RcppExport SEXP _CLDA_predict_CLDA_cpp(SEXP modSEXP, SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type mod(modSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
     rcpp_result_gen = Rcpp::wrap(predict_CLDA_cpp(mod, x));
     return rcpp_result_gen;
 END_RCPP

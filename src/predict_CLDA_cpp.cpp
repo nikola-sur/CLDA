@@ -4,26 +4,25 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-NumericVector predict_CLDA_cpp(List mod, NumericMatrix x) {
+NumericVector predict_CLDA_cpp(List mod, arma::mat x) {
   // Collect inputs ---
-  int n = x.nrow();
-  int p = x.ncol();
-  NumericVector beta = mod["beta"];
-  NumericVector xbar_0 = mod["xbar_0"];
-  NumericVector xbar_1 = mod["xbar_1"];
-  NumericMatrix Sigma_w = mod["Sigma_w"];
-  NumericMatrix x_old = Rcpp::clone(x);
-  // arma::mat x = x_old;
-  
+  int n = x.n_rows;
+  int p = x.n_cols;
+  arma::vec beta = mod["beta"];
+  arma::vec xbar_0 = mod["xbar_0"];
+  arma::vec xbar_1 = mod["xbar_1"];
+  arma::mat Sigma_w = mod["Sigma_w"];
+
+    
   // Make predictions
   NumericVector preds(n);
-  NumericVector obs(p);
-  NumericVector diffs_0(p);
-  NumericVector diffs_1(p);
+  arma::vec obs(p);
+  arma::vec diffs_0(p);
+  arma::vec diffs_1(p);
   
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < p; j++) { // Retrieve the i-th row
-      obs[j] = x(i, j);
+      obs(j) = x(i, j);
     }
     
     diffs_0 = obs - xbar_0;
