@@ -10,9 +10,13 @@
 #' @examples
 predict.CLDA <- function(mod, x) {
   # Basic input checks ---
+  stopifnot(is.matrix(x))
+  stopifnot(ncol(x) == ncol(mod$params$x))
   
   
-  # Collect inputs ---
-  params <- mod$params
+  # Make predictions ---
+  # val0 <- t(mod$beta) %*% mod$Sigma_w %*% mod$beta - 2*log(mod$n_0/mod$n)
+  preds <- predict_CLDA_cpp(mod, x)
   
+  return(preds)
 }
