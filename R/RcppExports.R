@@ -5,3 +5,7 @@ rcpp_hello_world <- function() {
     .Call(`_CLDA_rcpp_hello_world`)
 }
 
+testfun <- function(num) {
+    .Call(`_CLDA_testfun`, num)
+}
+

@@ -20,9 +20,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// testfun
+int testfun(int num);
+RcppExport SEXP _CLDA_testfun(SEXP numSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type num(numSEXP);
+    rcpp_result_gen = Rcpp::wrap(testfun(num));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_CLDA_rcpp_hello_world", (DL_FUNC) &_CLDA_rcpp_hello_world, 0},
+    {"_CLDA_testfun", (DL_FUNC) &_CLDA_testfun, 1},
     {NULL, NULL, 0}
 };
 
