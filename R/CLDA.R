@@ -39,24 +39,26 @@ CLDA <- function(x, y, linear, type, m, gamma = 0.01) {
   exec_time = 0.0
   
   
-  # Start LDA calculations ---
-  x_0 <- x[y == 0, ]
-  xbar_0 <- colMeans(x_0)
-  y_0 <- y[y == 0]
-  n_0 <- length(y_0)
-  
-  x_1 <- x[y == 1, ]
-  xbar_1 <- colMeans(x_1)
-  y_1 <- y[y == 1]
-  n_1 <- length(y_1)
-  
-  d <- sqrt(n_0 * n_1)/n * (xbar_0 - xbar_1) # Class mean differences
-  
-  diffs_0 <- sweep(x_0, 2, xbar_0) # Subtract from each row
-  diffs_1 <- sweep(x_1, 2, xbar_1)
-  Sigma_w <- (t(diffs_0) %*% diffs_0 + t(diffs_1) %*% diffs_1)/n # Within-class covariance
-  
-  beta <- solve(Sigma_w, d)
+  # Start calculations ---
+  if (linear & (type == "full")) {
+    x_0 <- x[y == 0, ]
+    xbar_0 <- colMeans(x_0)
+    y_0 <- y[y == 0]
+    n_0 <- length(y_0)
+    
+    x_1 <- x[y == 1, ]
+    xbar_1 <- colMeans(x_1)
+    y_1 <- y[y == 1]
+    n_1 <- length(y_1)
+    
+    d <- sqrt(n_0 * n_1)/n * (xbar_0 - xbar_1) # Class mean differences
+    
+    diffs_0 <- sweep(x_0, 2, xbar_0) # Subtract from each row
+    diffs_1 <- sweep(x_1, 2, xbar_1)
+    Sigma_w <- (t(diffs_0) %*% diffs_0 + t(diffs_1) %*% diffs_1)/n # Within-class covariance
+    
+    beta <- solve(Sigma_w, d)
+  }
   
   
   # Prepare output ---
