@@ -12,17 +12,28 @@
 #'
 #' @return
 #' @export
-CLDA <- function(x, y, linear, type, m, s = 0.01, gamma = 1e-4) {
+CLDA <- function(x, y, linear, type, m = nrow(x), s = 0.01, gamma = 1e-4) {
   # Basic input checks ---
   stopifnot(is.matrix(x))
   stopifnot(sum(y %in% c(0,1)) == length(y))
   stopifnot(length(y) == nrow(x))
   stopifnot(is.logical(linear))
   stopifnot(type %in% c("compressed", "projected", "FRF", "subsampled", "full"))
-  stopifnot(m <= length(x))
+  stopifnot(floor(m) == m) # Check if 'm' is an integer
+  stopifnot((m <= length(x)) & (m > 0))
   stopifnot((m == nrow(x)) | (type != "full"))
   stopifnot(is.double(gamma))
   stopifnot(gamma >= 0)
+  
+  
+  
+  # Update data if type == 'subsampled' ---
+  if (type == "subsampled") {
+    inds <- sample(1:nrow(x), size=m, replace=FALSE)
+    x <- x[inds, ]
+    y <- y[inds]
+    m <- nrow(x)
+  }
   
   
   
@@ -33,6 +44,7 @@ CLDA <- function(x, y, linear, type, m, s = 0.01, gamma = 1e-4) {
     linear        = linear,
     type          = type,
     m             = m,
+    s             = s,
     gamma         = gamma
   )
   
@@ -65,12 +77,12 @@ CLDA <- function(x, y, linear, type, m, s = 0.01, gamma = 1e-4) {
     })[3] # Elapsed time
     
     
-    if (type == "full") {
+    if (type %in% c("full", "subsampled")) {
       t2 <- system.time({
         Sigma_w <- (t(diffs_0) %*% diffs_0 + t(diffs_1) %*% diffs_1)/n + diag(rep(gamma, p)) # Within-class covariance
         beta <- solve(Sigma_w, d)
       })[3] 
-      exec_time <- t1 + t2
+      if (type == "full") exec_time <- t1 + t2
     } else if (type %in% c("compressed", "projected")) {
       t2 <- system.time({
         m_0 <- floor(m/n * n_0)

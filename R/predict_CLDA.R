@@ -23,7 +23,7 @@ predict.CLDA <- function(mod, x) {
   
   for (i in 1:n_test) { # Will be slow in R, but RcppArmadillo had some compilation issues...
     if (mod$params$linear) {
-      if (mod$params$type %in% c("full", "compressed", "projected")) {
+      if (mod$params$type %in% c("full", "compressed", "projected", "subsampled")) {
         obs <- x[i, ]
         diffs_0 <- obs - mod$xbar_0
         diffs_1 <- obs - mod$xbar_1
