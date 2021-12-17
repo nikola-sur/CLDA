@@ -56,6 +56,7 @@ CLDA <- function(x, y, linear, type, m = nrow(x), s = 0.01, gamma = 1e-4) {
   Sigma_w         <- NULL
   Sigma_w_0       <- NULL
   Sigma_w_1       <- NULL
+  xbar            <- NULL
   xbar_0          <- NULL
   xbar_1          <- NULL
   n               <- NULL
@@ -89,6 +90,9 @@ CLDA <- function(x, y, linear, type, m = nrow(x), s = 0.01, gamma = 1e-4) {
     d <- sqrt(n_0 * n_1)/n * (xbar_0 - xbar_1) # Class mean differences
     diffs_0 <- sweep(x = x_0, MARGIN = 2, STATS = xbar_0, FUN = "-") # Subtract from each row
     diffs_1 <- sweep(x = x_1, MARGIN = 2, STATS = xbar_1, FUN = "-")
+    
+    xbar <- colMeans(x)
+    diffs <- sweep(x = x, MARGIN = 2, STATS = xbar, FUN = "-")
   })[3] # Elapsed time
   
   
@@ -106,36 +110,45 @@ CLDA <- function(x, y, linear, type, m = nrow(x), s = 0.01, gamma = 1e-4) {
       }
     })[3] 
     if ((type == "full") & linear) exec_time <- t1 + t2
-  } else if (type %in% c("compressed", "projected")) {
+  } else if (type %in% c("compressed", "projected", "FRF")) {
     t2 <- system.time({
       m_0 <- floor(m/n * n_0)
       m_1 <- m - m_0
-      Q_0 <- CLDA::Rademacher(nrow = m_0, ncol = n_0, s=s)
-      Q_1 <- CLDA::Rademacher(nrow = m_1, ncol = n_1, s=s)
-      
-      x_c_0 <- sweep(x = 1/sqrt(n_0 * s) * Q_0 %*% diffs_0, MARGIN = 2, STATS = xbar_0, FUN = "+") # Compressed data in group 0
-      x_c_1 <- sweep(x = 1/sqrt(n_1 * s) * Q_1 %*% diffs_1, MARGIN = 2, STATS = xbar_1, FUN = "+")
-      
-      diffs_c_0 <- as.matrix(sweep(x = x_c_0, MARGIN = 2, STATS = xbar_0, FUN = "-"))
-      diffs_c_1 <- as.matrix(sweep(x = x_c_1, MARGIN = 2, STATS = xbar_1, FUN = "-"))
-      
-      Sigma_w_0_raw <- (t(diffs_c_0) %*% diffs_c_0)/m_0
-      Sigma_w_0 <- Sigma_w_0_raw + diag(rep(gamma, p))
-      
-      Sigma_w_1_raw <- t(diffs_c_1) %*% diffs_c_1
-      Sigma_w_1 <- Sigma_w_1_raw + diag(rep(gamma, p))
-      
-      if (linear) {
-        Sigma_w <- (m_0 * Sigma_w_0_raw + m_1 * Sigma_w_1_raw)/m + diag(rep(gamma, p)) # Within-class covariance
+      if (type %in% c("compressed", "projected")) {
+        Q_0 <- CLDA::Rademacher(nrow = m_0, ncol = n_0, s=s)
+        Q_1 <- CLDA::Rademacher(nrow = m_1, ncol = n_1, s=s)
+        
+        x_c_0 <- sweep(x = 1/sqrt(n_0 * s) * Q_0 %*% diffs_0, MARGIN = 2, STATS = xbar_0, FUN = "+") # Compressed data in group 0
+        x_c_1 <- sweep(x = 1/sqrt(n_1 * s) * Q_1 %*% diffs_1, MARGIN = 2, STATS = xbar_1, FUN = "+")
+        
+        diffs_c_0 <- as.matrix(sweep(x = x_c_0, MARGIN = 2, STATS = xbar_0, FUN = "-"))
+        diffs_c_1 <- as.matrix(sweep(x = x_c_1, MARGIN = 2, STATS = xbar_1, FUN = "-"))
+        
+        Sigma_w_0_raw <- (t(diffs_c_0) %*% diffs_c_0)/m_0
+        Sigma_w_0 <- Sigma_w_0_raw + diag(rep(gamma, p))
+        
+        Sigma_w_1_raw <- t(diffs_c_1) %*% diffs_c_1
+        Sigma_w_1 <- Sigma_w_1_raw + diag(rep(gamma, p))
+        
+        if (linear) {
+          Sigma_w <- (m_0 * Sigma_w_0_raw + m_1 * Sigma_w_1_raw)/m + diag(rep(gamma, p)) # Within-class covariance
+          beta <- solve(Sigma_w, d)
+        }
+      } else if (type == "FRF") {
+        Q <- CLDA::Rademacher(nrow = m, ncol = n, s=s)
+        x_c <- sweep(x = 1/sqrt(n * s) * Q %*% diffs, MARGIN = 2, STATS = xbar, FUN = "+")
+        diffs_c <- as.matrix(sweep(x = x_c, MARGIN = 2, STATS = xbar, FUN = "-"))
+        Sigma_w <- (t(diffs_c) %*% diffs_c)/m
         beta <- solve(Sigma_w, d)
       }
+      
     })[3]
     
     if (type == "compressed") {
       exec_time <- t1 + t2
     }
     
-    if (type == "projected") {
+    if (type %in% c("projected", "FRF")) {
       Sigma_w <- NULL
       inv_val <- 1/((sum((diffs_0 %*% beta)^2) + sum((diffs_1 %*% beta)^2))/n)
     }
@@ -149,6 +162,7 @@ CLDA <- function(x, y, linear, type, m = nrow(x), s = 0.01, gamma = 1e-4) {
     Sigma_w         = Sigma_w,
     Sigma_w_0       = Sigma_w_0,
     Sigma_w_1       = Sigma_w_1,
+    xbar            = xbar,
     xbar_0          = xbar_0,
     xbar_1          = xbar_1,
     n               = n,

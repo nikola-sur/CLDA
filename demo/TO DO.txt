@@ -1,4 +1,3 @@
-- FRF LDA
 
 - Set up simulation study in the other repo
 - Create helper functions for plotting
