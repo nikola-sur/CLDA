@@ -19,7 +19,7 @@ CLDA <- function(x, y, linear, type, m, gamma = 0.01) {
   stopifnot(is.logical(linear))
   stopifnot(type %in% c("compressed", "projected", "FRF", "sub-sampled", "full"))
   stopifnot(m <= length(x))
-  stopifnot((m == n) | (type != "full"))
+  stopifnot((m == nrow(x)) | (type != "full"))
   stopifnot((gamma == 0) | (type != "full"))
   stopifnot(is.double(gamma))
   
@@ -54,7 +54,7 @@ CLDA <- function(x, y, linear, type, m, gamma = 0.01) {
   
   diffs_0 <- sweep(x_0, 2, xbar_0) # Subtract from each row
   diffs_1 <- sweep(x_1, 2, xbar_1)
-  Sigma_w <- (t(diffs_0) %*% diffs_0 + t(diffs_1) %*% diffs_1)/2 # Within-class covariance
+  Sigma_w <- (t(diffs_0) %*% diffs_0 + t(diffs_1) %*% diffs_1)/n # Within-class covariance
   
   beta <- solve(Sigma_w, d)
   
