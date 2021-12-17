@@ -21,8 +21,8 @@ CLDA <- function(x, y, linear, type, m, s = 0.01, gamma = 1e-4) {
   stopifnot(type %in% c("compressed", "projected", "FRF", "sub-sampled", "full"))
   stopifnot(m <= length(x))
   stopifnot((m == nrow(x)) | (type != "full"))
-  stopifnot((gamma == 0) | (type != "full"))
   stopifnot(is.double(gamma))
+  stopifnot(gamma >= 0)
   
   
   # Collect inputs ---
@@ -62,7 +62,7 @@ CLDA <- function(x, y, linear, type, m, s = 0.01, gamma = 1e-4) {
     
     
     if (type == "full") {
-      Sigma_w <- (t(diffs_0) %*% diffs_0 + t(diffs_1) %*% diffs_1)/n # Within-class covariance
+      Sigma_w <- (t(diffs_0) %*% diffs_0 + t(diffs_1) %*% diffs_1)/n + diag(rep(gamma, p)) # Within-class covariance
       beta <- solve(Sigma_w, d)
     } else if (type == "compressed") {
       m_0 <- floor(m/n * n_0)
@@ -76,10 +76,11 @@ CLDA <- function(x, y, linear, type, m, s = 0.01, gamma = 1e-4) {
       diffs_c_0 <- as.matrix(sweep(x = x_c_0, MARGIN = 2, STATS = xbar_0, FUN = "-"))
       diffs_c_1 <- as.matrix(sweep(x = x_c_1, MARGIN = 2, STATS = xbar_1, FUN = "-"))
       
-      Sigma_w <- (t(diffs_c_0) %*% diffs_c_0 + t(diffs_c_1) %*% diffs_c_1)/m # Within-class covariance
+      Sigma_w <- (t(diffs_c_0) %*% diffs_c_0 + t(diffs_c_1) %*% diffs_c_1)/m + diag(rep(gamma, p)) # Within-class covariance
       beta <- solve(Sigma_w, d)
     }
   }
+  
 
   
   # Prepare output ---

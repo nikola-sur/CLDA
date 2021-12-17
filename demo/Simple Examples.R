@@ -15,8 +15,9 @@ y_test <- as.numeric(zip_test[, 1])
 
 # Fit models
 set.seed(2947640)
-mod_L1 <- CLDA::CLDA(x = x, y = y, linear = TRUE, type = "full", m = nrow(x), s = 1.0, gamma = 0.0)
-mod_L2 <- CLDA::CLDA(x = x, y = y, linear = TRUE, type = "compressed", m = floor(nrow(x)/10), s = 0.01, gamma = 0.0)
+mod_L1 <- CLDA::CLDA(x = x, y = y, linear = TRUE, type = "full", m = nrow(x), s = 1.0, gamma = 1e-4)
+mod_L2 <- CLDA::CLDA(x = x, y = y, linear = TRUE, type = "compressed", m = floor(nrow(x)/10), s = 0.01, gamma = 1e-4)
+mod_L2 <- CLDA::CLDA(x = x, y = y, linear = TRUE, type = "projected", m = floor(nrow(x)/10), s = 0.01, gamma = 1e-4)
 
 
 # Make predictions
