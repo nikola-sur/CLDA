@@ -119,8 +119,16 @@ CLDA <- function(x, y, linear, type, m = nrow(x), s = 0.01, gamma = 1e-4) {
       diffs_c_0 <- as.matrix(sweep(x = x_c_0, MARGIN = 2, STATS = xbar_0, FUN = "-"))
       diffs_c_1 <- as.matrix(sweep(x = x_c_1, MARGIN = 2, STATS = xbar_1, FUN = "-"))
       
-      Sigma_w <- (t(diffs_c_0) %*% diffs_c_0 + t(diffs_c_1) %*% diffs_c_1)/m + diag(rep(gamma, p)) # Within-class covariance
-      beta <- solve(Sigma_w, d)
+      Sigma_w_0_raw <- (t(diffs_c_0) %*% diffs_c_0)/m_0
+      Sigma_w_0 <- Sigma_w_0_raw + diag(rep(gamma, p))
+      
+      Sigma_w_1_raw <- t(diffs_c_1) %*% diffs_c_1
+      Sigma_w_1 <- Sigma_w_1_raw + diag(rep(gamma, p))
+      
+      if (linear) {
+        Sigma_w <- (m_0 * Sigma_w_0_raw + m_1 * Sigma_w_1_raw)/m + diag(rep(gamma, p)) # Within-class covariance
+        beta <- solve(Sigma_w, d)
+      }
     })[3]
     
     if (type == "compressed") {
