@@ -31,6 +31,8 @@ predict.CLDA <- function(mod, x) {
   } else { # QDA
     Sigma_w_diffs_0 <- solve(mod$Sigma_w_0, t(diffs_0_mat))
     Sigma_w_diffs_1 <- solve(mod$Sigma_w_1, t(diffs_1_mat))
+    det_0 <- determinant(mod$Sigma_w_0, logarithm=TRUE)$modulus[1]
+    det_1 <- determinant(mod$Sigma_w_1, logarithm=TRUE)$modulus[1]
   }
   
   
@@ -45,10 +47,8 @@ predict.CLDA <- function(mod, x) {
         val0 <- beta_diffs_0 * inv_val * beta_diffs_0 - 2*log(mod$n_0/mod$n)
         val1 <- beta_diffs_1 * inv_val * beta_diffs_1 - 2*log(mod$n_1/mod$n)
       } else { # QDA
-        val0 <- t(diffs_0) %*% Sigma_w_diffs_0[, i] + 
-          determinant(mod$Sigma_w_0, logarithm=TRUE)$modulus[1] - 2 * log(mod$pi_0)
-        val1 <- t(diffs_1) %*% Sigma_w_diffs_1[, i] + 
-          determinant(mod$Sigma_w_1, logarithm=TRUE)$modulus[1] - 2 * log(mod$pi_1)
+        val0 <- t(diffs_0) %*% Sigma_w_diffs_0[, i] + det_0 - 2 * log(mod$pi_0)
+        val1 <- t(diffs_1) %*% Sigma_w_diffs_1[, i] + det_1 - 2 * log(mod$pi_1)
       }
     }
     
