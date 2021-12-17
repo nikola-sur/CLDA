@@ -25,6 +25,7 @@ CLDA <- function(x, y, linear, type, m, s = 0.01, gamma = 1e-4) {
   stopifnot(gamma >= 0)
   
   
+  
   # Collect inputs ---
   params <- list(
     x             = x,
@@ -35,56 +36,66 @@ CLDA <- function(x, y, linear, type, m, s = 0.01, gamma = 1e-4) {
     gamma         = gamma
   )
   
-  n <- nrow(x)
-  p <- ncol(x)
-  exec_time = 0.0
   
   
   # Prepare outputs ---
   inv_val <- NULL
+  exec_time <- NULL
   
   
   # Start calculations ---
+  n <- nrow(x)
+  p <- ncol(x)
+  
   if (linear) {
-    x_0 <- x[y == 0, ]
-    xbar_0 <- colMeans(x_0)
-    y_0 <- y[y == 0]
-    n_0 <- length(y_0)
-    
-    x_1 <- x[y == 1, ]
-    xbar_1 <- colMeans(x_1)
-    y_1 <- y[y == 1]
-    n_1 <- length(y_1)
-    
-    d <- sqrt(n_0 * n_1)/n * (xbar_0 - xbar_1) # Class mean differences
-    diffs_0 <- sweep(x = x_0, MARGIN = 2, STATS = xbar_0, FUN = "-") # Subtract from each row
-    diffs_1 <- sweep(x = x_1, MARGIN = 2, STATS = xbar_1, FUN = "-")
+    t1 <- system.time({
+      x_0 <- x[y == 0, ]
+      xbar_0 <- colMeans(x_0)
+      y_0 <- y[y == 0]
+      n_0 <- length(y_0)
+      
+      x_1 <- x[y == 1, ]
+      xbar_1 <- colMeans(x_1)
+      y_1 <- y[y == 1]
+      n_1 <- length(y_1)
+      
+      d <- sqrt(n_0 * n_1)/n * (xbar_0 - xbar_1) # Class mean differences
+      diffs_0 <- sweep(x = x_0, MARGIN = 2, STATS = xbar_0, FUN = "-") # Subtract from each row
+      diffs_1 <- sweep(x = x_1, MARGIN = 2, STATS = xbar_1, FUN = "-")
+    })[3] # Elapsed time
     
     
     if (type == "full") {
-      Sigma_w <- (t(diffs_0) %*% diffs_0 + t(diffs_1) %*% diffs_1)/n + diag(rep(gamma, p)) # Within-class covariance
-      beta <- solve(Sigma_w, d)
+      t2 <- system.time({
+        Sigma_w <- (t(diffs_0) %*% diffs_0 + t(diffs_1) %*% diffs_1)/n + diag(rep(gamma, p)) # Within-class covariance
+        beta <- solve(Sigma_w, d)
+      })[3] 
+      exec_time <- t1 + t2
     } else if (type %in% c("compressed", "projected")) {
-      m_0 <- floor(m/n * n_0)
-      m_1 <- m - m_0
-      Q_0 <- CLDA::Rademacher(nrow = m_0, ncol = n_0, s=s)
-      Q_1 <- CLDA::Rademacher(nrow = m_1, ncol = n_1, s=s)
+      t2 <- system.time({
+        m_0 <- floor(m/n * n_0)
+        m_1 <- m - m_0
+        Q_0 <- CLDA::Rademacher(nrow = m_0, ncol = n_0, s=s)
+        Q_1 <- CLDA::Rademacher(nrow = m_1, ncol = n_1, s=s)
+        
+        x_c_0 <- sweep(x = 1/sqrt(n_0 * s) * Q_0 %*% diffs_0, MARGIN = 2, STATS = xbar_0, FUN = "+") # Compressed data in group 0
+        x_c_1 <- sweep(x = 1/sqrt(n_1 * s) * Q_1 %*% diffs_1, MARGIN = 2, STATS = xbar_1, FUN = "+")
+        
+        diffs_c_0 <- as.matrix(sweep(x = x_c_0, MARGIN = 2, STATS = xbar_0, FUN = "-"))
+        diffs_c_1 <- as.matrix(sweep(x = x_c_1, MARGIN = 2, STATS = xbar_1, FUN = "-"))
+        
+        Sigma_w <- (t(diffs_c_0) %*% diffs_c_0 + t(diffs_c_1) %*% diffs_c_1)/m + diag(rep(gamma, p)) # Within-class covariance
+        beta <- solve(Sigma_w, d)
+      })[3]
       
-      x_c_0 <- sweep(x = 1/sqrt(n_0 * s) * Q_0 %*% diffs_0, MARGIN = 2, STATS = xbar_0, FUN = "+") # Compressed data in group 0
-      x_c_1 <- sweep(x = 1/sqrt(n_1 * s) * Q_1 %*% diffs_1, MARGIN = 2, STATS = xbar_1, FUN = "+")
-      
-      diffs_c_0 <- as.matrix(sweep(x = x_c_0, MARGIN = 2, STATS = xbar_0, FUN = "-"))
-      diffs_c_1 <- as.matrix(sweep(x = x_c_1, MARGIN = 2, STATS = xbar_1, FUN = "-"))
-      
-      Sigma_w <- (t(diffs_c_0) %*% diffs_c_0 + t(diffs_c_1) %*% diffs_c_1)/m + diag(rep(gamma, p)) # Within-class covariance
-      beta <- solve(Sigma_w, d)
+      if (type == "compressed") {
+        exec_time <- t1 + t2
+      }
       
       if (type == "projected") {
         Sigma_w <- NULL
         inv_val <- 1/((sum((diffs_0 %*% beta)^2) + sum((diffs_1 %*% beta)^2))/n)
       }
-    } else if (type == "projected") {
-      
     }
   }
   
@@ -99,6 +110,7 @@ CLDA <- function(x, y, linear, type, m, s = 0.01, gamma = 1e-4) {
     n               = n,
     n_0             = n_0,
     n_1             = n_1,
+    p               = p,
     inv_val         = inv_val,
     exec_time       = exec_time,
     params          = params
