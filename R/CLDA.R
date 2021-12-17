@@ -4,7 +4,7 @@
 #' @param x Numeric matrix of features.
 #' @param y Binary-valued vector of class labels.
 #' @param linear Boolean: Whether to use LDA (true) or QDA (false).
-#' @param type Type of compression. One of "compressed", "projected", "FRF", "sub-sampled", or "full".
+#' @param type Type of compression. One of "compressed", "projected", "FRF", "subsampled", or "full".
 #' For QDA, "projected" and "FRF" are not implemented.
 #' @param m Reduced number of samples.
 #' @param s Sparsity parameter (see the paper). Defaults to 0.01.
@@ -18,7 +18,7 @@ CLDA <- function(x, y, linear, type, m, s = 0.01, gamma = 1e-4) {
   stopifnot(sum(y %in% c(0,1)) == length(y))
   stopifnot(length(y) == nrow(x))
   stopifnot(is.logical(linear))
-  stopifnot(type %in% c("compressed", "projected", "FRF", "sub-sampled", "full"))
+  stopifnot(type %in% c("compressed", "projected", "FRF", "subsampled", "full"))
   stopifnot(m <= length(x))
   stopifnot((m == nrow(x)) | (type != "full"))
   stopifnot(is.double(gamma))
@@ -41,7 +41,7 @@ CLDA <- function(x, y, linear, type, m, s = 0.01, gamma = 1e-4) {
   
   
   # Prepare outputs ---
-  
+  inv_val <- NULL
   
   
   # Start calculations ---
@@ -64,7 +64,7 @@ CLDA <- function(x, y, linear, type, m, s = 0.01, gamma = 1e-4) {
     if (type == "full") {
       Sigma_w <- (t(diffs_0) %*% diffs_0 + t(diffs_1) %*% diffs_1)/n + diag(rep(gamma, p)) # Within-class covariance
       beta <- solve(Sigma_w, d)
-    } else if (type == "compressed") {
+    } else if (type %in% c("compressed", "projected")) {
       m_0 <- floor(m/n * n_0)
       m_1 <- m - m_0
       Q_0 <- CLDA::Rademacher(nrow = m_0, ncol = n_0, s=s)
@@ -78,6 +78,13 @@ CLDA <- function(x, y, linear, type, m, s = 0.01, gamma = 1e-4) {
       
       Sigma_w <- (t(diffs_c_0) %*% diffs_c_0 + t(diffs_c_1) %*% diffs_c_1)/m + diag(rep(gamma, p)) # Within-class covariance
       beta <- solve(Sigma_w, d)
+      
+      if (type == "projected") {
+        Sigma_w <- NULL
+        inv_val <- 1/((sum((diffs_0 %*% beta)^2) + sum((diffs_1 %*% beta)^2))/n)
+      }
+    } else if (type == "projected") {
+      
     }
   }
   
@@ -85,15 +92,16 @@ CLDA <- function(x, y, linear, type, m, s = 0.01, gamma = 1e-4) {
   
   # Prepare output ---
   mod <- list(
-    beta      = beta,
-    Sigma_w   = Sigma_w,
-    xbar_0    = xbar_0,
-    xbar_1    = xbar_1,
-    n         = n,
-    n_0       = n_0,
-    n_1       = n_1,
-    exec_time = exec_time,
-    params    = params
+    beta            = beta,
+    Sigma_w         = Sigma_w,
+    xbar_0          = xbar_0,
+    xbar_1          = xbar_1,
+    n               = n,
+    n_0             = n_0,
+    n_1             = n_1,
+    inv_val         = inv_val,
+    exec_time       = exec_time,
+    params          = params
   )
   class(mod) <- c("CLDA", class(mod))
   
