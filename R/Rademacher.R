@@ -9,8 +9,8 @@
 #'
 #' @examples
 Rademacher <- function(nrow, ncol, s) {
-  mat <- matrix(sample(x=c(1, -1, 0), size=100, replace=TRUE, prob=c(s/2, s/2, 1-s)), 
-                nrow = nrow, ncol = ncol)
+  mat <- Matrix::Matrix(sample(x=c(1, -1, 0), size=nrow*ncol, replace=TRUE, prob=c(s/2, s/2, 1-s)), 
+                        nrow = nrow, ncol = ncol, sparse = TRUE)
   
   return(mat)
 }

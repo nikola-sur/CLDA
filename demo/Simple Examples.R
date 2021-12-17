@@ -13,5 +13,12 @@ y <- as.numeric(zip_train[, 1])
 x_test <- as.matrix(unname(zip_test[, -1]))
 y_test <- as.numeric(zip_test[, 1])
 
-mod <- CLDA::CLDA(x = x, y = y, linear = TRUE, type = "full", m = nrow(x), gamma = 0.0)
-preds <- predict.CLDA(mod = mod, x = x_test)
+# Fit models
+set.seed(2947640)
+mod_L1 <- CLDA::CLDA(x = x, y = y, linear = TRUE, type = "full", m = nrow(x), s = 1.0, gamma = 0.0)
+mod_L2 <- CLDA::CLDA(x = x, y = y, linear = TRUE, type = "compressed", m = floor(nrow(x)/10), s = 0.01, gamma = 0.0)
+
+
+# Make predictions
+preds_L1 <- predict.CLDA(mod = mod_L1, x = x_test)
+preds_L2 <- predict.CLDA(mod = mod_L2, x = x_test)
