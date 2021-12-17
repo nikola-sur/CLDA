@@ -12,3 +12,5 @@ You can install this package by typing
 # install.packages("devtools")
 devtools::install_github("nikola-sur/CLDA")
 ```
+
+If there are issues with permissions during installation, please let me know and I can change the visibility of the repository from private to public temporarily.
