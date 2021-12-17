@@ -9,10 +9,8 @@
 #'
 #' @examples
 Rademacher <- function(nrow, ncol, s) {
-  rmultinom(n = nrow*ncol, size = 0)
-  
-  
-  mat <- matrix(NA, nrow = nrow, ncol = ncol)
+  mat <- matrix(sample(x=c(1, -1, 0), size=100, replace=TRUE, prob=c(s/2, s/2, 1-s)), 
+                nrow = nrow, ncol = ncol)
   
   return(mat)
 }
