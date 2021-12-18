@@ -77,7 +77,6 @@ for (m in m_vec) {
     mods[["L_subsampled"]] <- CLDA(x = x, y = y, linear = TRUE,  type = "subsampled", m = m, gamma = gamma)
     mods[["L_full"]]       <- CLDA(x = x, y = y, linear = TRUE,  type = "full", gamma = gamma)
     
-    browser()
     mods[["Q_compressed"]] <- CLDA(x = x, y = y, linear = FALSE, type = "compressed", m = m, s = s, gamma = gamma)
     mods[["Q_subsampled"]] <- CLDA(x = x, y = y, linear = FALSE, type = "subsampled", m = m, gamma = gamma)
     mods[["Q_full"]]       <- CLDA(x = x, y = y, linear = FALSE, type = "full", gamma = gamma)
@@ -104,6 +103,6 @@ for (m in m_vec) {
 ## Produce plots
 
 ```{r}
-plot.CLDA(data = sim_data)
+plot.CLDA(data = sim_data, light_theme = TRUE)
 ```
 
