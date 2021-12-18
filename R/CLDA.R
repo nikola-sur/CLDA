@@ -138,7 +138,7 @@ CLDA <- function(x, y, linear, type, m = nrow(x), s = 0.01, gamma = 1e-4) {
         Q <- CLDA::Rademacher(nrow = m, ncol = n, s=s)
         x_c <- sweep(x = 1/sqrt(n * s) * Q %*% diffs, MARGIN = 2, STATS = xbar, FUN = "+")
         diffs_c <- as.matrix(sweep(x = x_c, MARGIN = 2, STATS = xbar, FUN = "-"))
-        Sigma_w <- (t(diffs_c) %*% diffs_c)/m
+        Sigma_w <- (t(diffs_c) %*% diffs_c)/m + diag(rep(gamma, p))
         beta <- solve(Sigma_w, d)
       }
       

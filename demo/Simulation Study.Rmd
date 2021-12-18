@@ -42,9 +42,9 @@ y_test <- as.numeric(zip_test[, 1])
 
 ```{r}
 s <- 0.01
-gamma <- 1e-4
-m_vec <- 750L # c(250L, 500L, 1000L, 2000L)
-num_reps <- 1L # Number of simulations for a given value of 'm'; 100L
+gamma <- 1e-4 # Original study suggests 1e-4, but this did not work
+m_vec <- c(250L, 500L, 1000L, 2000L) # c(250L, 500L, 1000L, 2000L)
+num_reps <- 2L # Number of simulations for a given value of 'm'; 100L
 mod_names <- c("L_compressed", "L_projected", "L_FRF", "L_subsampled", "L_full",
                "Q_compressed", "Q_subsampled", "Q_full")
 ```
@@ -61,11 +61,11 @@ sim_data <- data.frame(m = rep(NA, length(m_vec) * num_reps * length(mod_names))
 ```
 
 ```{r}
-set.seed(2045070)
+set.seed(6489354)
 
 ctr <- 1 # Row in 'sim_data'
 for (m in m_vec) {
-  for (rep in num_reps) {
+  for (rep in 1:num_reps) {
     mods <- vector(mode = 'list', length = length(mod_names))
     names(mods) <- mod_names
 
@@ -96,7 +96,7 @@ for (m in m_vec) {
 ```
 
 ```{r}
-
+# The full simulation should take about 30 minutes
 ```
 
 
