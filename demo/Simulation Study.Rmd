@@ -44,7 +44,7 @@ y_test <- as.numeric(zip_test[, 1])
 s <- 0.01
 gamma <- 1e-4 # Original study suggests 1e-4, but this did not work
 m_vec <- c(250L, 500L, 1000L, 2000L) # c(250L, 500L, 1000L, 2000L)
-num_reps <- 2L # Number of simulations for a given value of 'm'; 100L
+num_reps <- 100L # Number of simulations for a given value of 'm'; 100L
 mod_names <- c("L_compressed", "L_projected", "L_FRF", "L_subsampled", "L_full",
                "Q_compressed", "Q_subsampled", "Q_full")
 ```
@@ -102,23 +102,7 @@ for (m in m_vec) {
 
 ## Produce plots
 
-### LDA misclassification error rates
-
 ```{r}
-
-```
-
-
-### LDA execution times
-
-```{r}
-
-```
-
-
-### QDA misclassification error rates
-
-```{r}
-
+plot.CLDA(data = sim_data)
 ```
 
