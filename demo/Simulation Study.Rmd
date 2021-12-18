@@ -1,0 +1,124 @@
+---
+title: "Simulation Study"
+author: "Nikola Surjanovic"
+date: "17/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls())
+```
+
+
+# Load package
+
+```{r}
+# install.packages("devtools")
+# devtools::install_github("nikola-sur/CLDA")
+library(CLDA)
+```
+
+
+
+# Load data from package
+
+```{r}
+data(zip_train)
+data(zip_test)
+
+x <- as.matrix(unname(zip_train[, -1]))
+y <- as.numeric(zip_train[, 1])
+
+x_test <- as.matrix(unname(zip_test[, -1]))
+y_test <- as.numeric(zip_test[, 1])
+```
+
+
+
+# Simulation
+
+## Simulation settings
+
+```{r}
+s <- 0.01
+gamma <- 1e-4
+m_vec <- 750L # c(250L, 500L, 1000L, 2000L)
+num_reps <- 1L # Number of simulations for a given value of 'm'; 100L
+mod_names <- c("L_compressed", "L_projected", "L_FRF", "L_subsampled", "L_full",
+               "Q_compressed", "Q_subsampled", "Q_full")
+```
+
+
+## Start simulation
+
+```{r}
+sim_data <- data.frame(m = rep(NA, length(m_vec) * num_reps * length(mod_names)),
+                       rep = NA,
+                       method = NA,
+                       error = NA,
+                       exec_time = NA)
+```
+
+```{r}
+set.seed(2045070)
+
+ctr <- 1 # Row in 'sim_data'
+for (m in m_vec) {
+  for (rep in num_reps) {
+    mods <- vector(mode = 'list', length = length(mod_names))
+    names(mods) <- mod_names
+
+        
+    # Fit models
+    mods[["L_compressed"]] <- CLDA(x = x, y = y, linear = TRUE,  type = "compressed", m = m, s = s, gamma = gamma)
+    mods[["L_projected"]]  <- CLDA(x = x, y = y, linear = TRUE,  type = "projected", m = m, s = s, gamma = gamma)
+    mods[["L_FRF"]]        <- CLDA(x = x, y = y, linear = TRUE,  type = "FRF", m = m, s = s, gamma = gamma)
+    mods[["L_subsampled"]] <- CLDA(x = x, y = y, linear = TRUE,  type = "subsampled", m = m, gamma = gamma)
+    mods[["L_full"]]       <- CLDA(x = x, y = y, linear = TRUE,  type = "full", gamma = gamma)
+    
+    mods[["Q_compressed"]] <- CLDA(x = x, y = y, linear = FALSE, type = "compressed", m = m, s = s, gamma = gamma)
+    mods[["Q_subsampled"]] <- CLDA(x = x, y = y, linear = FALSE, type = "subsampled", m = m, gamma = gamma)
+    mods[["Q_full"]]       <- CLDA(x = x, y = y, linear = FALSE, type = "full", gamma = gamma)
+    
+    
+    # Record misclassification error rates and times
+    for (mod_name in mod_names) {
+      preds <- predict.CLDA(mod = mods[[mod_name]], x = x_test)
+      error <- misclass.CLDA(preds = preds, y = y_test)
+      exec_time <- mods[[mod_name]]$exec_time
+      
+      sim_data[ctr, ] <- list(m, rep, mod_name, error, exec_time)
+      ctr <- ctr + 1
+    }
+  }
+}
+```
+
+```{r}
+
+```
+
+
+## Produce plots
+
+### LDA misclassification error rates
+
+```{r}
+
+```
+
+
+### LDA execution times
+
+```{r}
+
+```
+
+
+### QDA misclassification error rates
+
+```{r}
+
+```
+
