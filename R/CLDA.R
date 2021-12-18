@@ -59,6 +59,10 @@ CLDA <- function(x, y, linear, type, m = nrow(x), s = 0.01, gamma = 1e-4) {
   xbar            <- NULL
   xbar_0          <- NULL
   xbar_1          <- NULL
+  x_c_0           <- NULL
+  x_c_1           <- NULL
+  x_0             <- NULL
+  x_1             <- NULL
   n               <- NULL
   n_0             <- NULL
   n_1             <- NULL
@@ -127,7 +131,7 @@ CLDA <- function(x, y, linear, type, m = nrow(x), s = 0.01, gamma = 1e-4) {
         Sigma_w_0_raw <- (t(diffs_c_0) %*% diffs_c_0)/m_0
         Sigma_w_0 <- Sigma_w_0_raw + diag(rep(gamma, p))
         
-        Sigma_w_1_raw <- t(diffs_c_1) %*% diffs_c_1
+        Sigma_w_1_raw <- (t(diffs_c_1) %*% diffs_c_1)/m_1
         Sigma_w_1 <- Sigma_w_1_raw + diag(rep(gamma, p))
         
         if (linear) {
@@ -165,6 +169,10 @@ CLDA <- function(x, y, linear, type, m = nrow(x), s = 0.01, gamma = 1e-4) {
     xbar            = xbar,
     xbar_0          = xbar_0,
     xbar_1          = xbar_1,
+    x_c_0           = x_c_0,
+    x_c_1           = x_c_1,
+    x_0             = x_0,
+    x_1             = x_1,
     n               = n,
     n_0             = n_0,
     n_1             = n_1,
