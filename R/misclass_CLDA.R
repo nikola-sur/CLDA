@@ -10,5 +10,5 @@ misclass.CLDA <- function(preds, y) {
   stopifnot(sum(y %in% c(0, 1)) == length(y))
   stopifnot(length(preds) == length(y))
   
-  return(mean(preds == y))
+  return(mean(preds != y))
 }
