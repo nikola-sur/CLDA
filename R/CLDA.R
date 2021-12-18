@@ -66,7 +66,7 @@ CLDA <- function(x, y, linear, type, m = nrow(x), s = 0.01, gamma = 1e-4) {
   pi_1            <- NULL
   p               <- NULL
   inv_val         <- NULL
-  exec_time       <- NULL
+  exec_time       <- -1.0
   
   
   

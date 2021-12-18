@@ -5,7 +5,7 @@
 \title{CLDA
 Various LDA/QDA functions and compression schemes.}
 \usage{
-CLDA(x, y, linear, type, m, gamma = 0.01)
+CLDA(x, y, linear, type, m = nrow(x), s = 0.01, gamma = 1e-04)
 }
 \arguments{
 \item{x}{Numeric matrix of features.}
@@ -14,12 +14,14 @@ CLDA(x, y, linear, type, m, gamma = 0.01)
 
 \item{linear}{Boolean: Whether to use LDA (true) or QDA (false).}
 
-\item{type}{Type of compression. One of "compressed", "projected", "FRF", "sub-sampled", or "full".
+\item{type}{Type of compression. One of "compressed", "projected", "FRF", "subsampled", or "full".
 For QDA, "projected" and "FRF" are not implemented.}
 
-\item{m}{Reduced number of samples}
+\item{m}{Reduced number of samples.}
 
-\item{gamma}{Tuning parameter for numerical stability (see the paper). Defaults to 0.01.}
+\item{s}{Sparsity parameter (see the paper). Defaults to 0.01.}
+
+\item{gamma}{Tuning parameter for numerical stability (see the paper). Defaults to 1e-4.}
 }
 \value{
 
