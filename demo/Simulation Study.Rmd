@@ -103,6 +103,6 @@ for (m in m_vec) {
 ## Produce plots
 
 ```{r}
-plot.CLDA(data = sim_data, light_theme = TRUE)
+plot.CLDA(data = sim_data, light_theme = TRUE, save_plots = TRUE)
 ```
 

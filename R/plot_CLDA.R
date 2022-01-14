@@ -2,10 +2,11 @@
 #'
 #' @param data Simulation data.
 #' @param light_theme Boolean: Whether to use the light theme or the default theme.
+#' @param save_plots Boolean: Whether to save the plots to disk as a PNG file.
 #'
 #' @return
 #' @export
-plot.CLDA <- function(data, light_theme = TRUE) {
+plot.CLDA <- function(data, light_theme = TRUE, save_plots = FALSE) {
   # Transform data for plotting ---
   data$method <- factor(data$method, levels = c("L_compressed", "L_projected", "L_FRF", "L_subsampled", "L_full",
                                                 "Q_compressed", "Q_subsampled", "Q_full"),
@@ -29,6 +30,8 @@ plot.CLDA <- function(data, light_theme = TRUE) {
     ggplot2::geom_hline(yintercept = full_LDA_error, linetype = "dashed", size = 1.0) +
     ggplot2::ylim(0, NA)
   if (light_theme) p1 <- p1 + ggplot2::theme_light()
+  if (save_plots) ggplot2::ggsave(filename = "./LDA_misclass.png", plot = p1, device = "png",
+                                  path = "./", width = 6.5, height = 4.25, units = "in", dpi = 1200)
   plot(p1)
   
   
@@ -45,6 +48,8 @@ plot.CLDA <- function(data, light_theme = TRUE) {
     ggplot2::geom_hline(yintercept = full_QDA_error, linetype = "dashed", size = 1.0) +
     ggplot2::ylim(0, NA)
   if (light_theme) p3 <- p3 + ggplot2::theme_light()
+  if (save_plots) ggplot2::ggsave(filename = "./QDA_misclass.png", plot = p3, device = "png",
+                                  path = "./", width = 6.5, height = 4.25, units = "in", dpi = 1200)
   plot(p3)
   
   
@@ -63,5 +68,7 @@ plot.CLDA <- function(data, light_theme = TRUE) {
     ggplot2::labs(color = "Method") +
     ggplot2::ylim(0, NA)
   if (light_theme) p2 <- p2 + ggplot2::theme_light()
+  if (save_plots) ggplot2::ggsave(filename = "./LDA_time.png", plot = p2, device = "png",
+                                  path = "./", width = 6.5, height = 4.25, units = "in", dpi = 1200)
   plot(p2)
 }
