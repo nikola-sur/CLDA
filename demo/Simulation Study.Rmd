@@ -42,9 +42,9 @@ y_test <- as.numeric(zip_test[, 1])
 
 ```{r}
 s <- 0.01
-gamma <- 1e-4 # Original study suggests 1e-4, but this did not work
+gamma <- 1e-4 # Original study suggests 1e-4
 m_vec <- c(250L, 500L, 1000L, 2000L) # c(250L, 500L, 1000L, 2000L)
-num_reps <- 100L # Number of simulations for a given value of 'm'; 100L
+num_reps <- 10L # Number of simulations for a given value of 'm'; 100L
 mod_names <- c("L_compressed", "L_projected", "L_FRF", "L_subsampled", "L_full",
                "Q_compressed", "Q_subsampled", "Q_full")
 ```
