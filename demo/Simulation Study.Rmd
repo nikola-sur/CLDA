@@ -111,6 +111,10 @@ plot.CLDA(data = sim_data, light_theme = TRUE, save_plots = TRUE)
 ## Produce tables
 
 ```{r}
-
+library(dplyr)
+sim_data %>%
+  dplyr::group_by(method, m) %>%
+  dplyr::summarize(avg_error = mean(error), avg_time = mean(exec_time), count = n(),
+                   sd_error = sd(error)/sqrt(count), sd_time = sd(exec_time)/sqrt(count))
 ```
 
