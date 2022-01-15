@@ -1,5 +1,5 @@
 # CLDA
-CLDA: "Compressed LDA". Code for my STAT 548 report with Daniel McDonald. This package provides tools to replicate an analysis in the paper "Compressing Large Sample Data for Discriminant Analysis".
+CLDA: "Compressed LDA". Code for my STAT 548 report with Dr. Daniel McDonald. This package provides tools to replicate an analysis in the paper "Compressing Large Sample Data for Discriminant Analysis".
 
 See also: https://github.com/nikola-sur/LDA-Compression
 
