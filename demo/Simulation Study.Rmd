@@ -107,3 +107,10 @@ for (m in m_vec) {
 plot.CLDA(data = sim_data, light_theme = TRUE, save_plots = TRUE)
 ```
 
+
+## Produce tables
+
+```{r}
+
+```
+
