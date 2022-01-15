@@ -19,4 +19,4 @@ If there are issues with permissions during installation, please let me know. Yo
 
 
 ## Simulation study
-The simulation study files are in the "demo" folder
+The simulation study files are in the "demo" folder.
